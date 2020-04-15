@@ -41,6 +41,7 @@ import {
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 
 const useStyles = makeStyles(styles);
+var valorEmReal = "R$";
 
 export default function Dashboard() {
   const classes = useStyles();
@@ -49,7 +50,7 @@ export default function Dashboard() {
   const [despesasMes, setDespesasMes] = useState();
   const dependentesColumns = ["Nome", "Parentesco", "Renda"]
   const objetivosColumns = ["Nome", "Quantidade de Investimentos", "Valor Total"]
-
+  
   const buscarDependentes = () => {
     fetch('http://localhost:8080/usuarios/1/dependentes', {
       method: 'get',
@@ -63,7 +64,6 @@ export default function Dashboard() {
       .then(json => {
         console.log(json)
 
-        //isso daqui vai ser importante e está quase pronto pra o que vcs vão precisar
         var result = json.map(function (obj) {
           var posArr = []
           posArr.push(obj.nome)
@@ -71,7 +71,8 @@ export default function Dashboard() {
           posArr.push(obj.renda)
           return posArr;
         });
-
+        
+        console.log(result.renda)
         setDependentes(result)
       })
       .catch(err => {
@@ -99,7 +100,8 @@ export default function Dashboard() {
           somaMensal += item.valor
         })
 
-        setDespesasMes(somaMensal)
+        
+        setDespesasMes(somaMensal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
       })
       .catch(err => {
         console.log("Erro")
@@ -120,7 +122,6 @@ export default function Dashboard() {
       .then(json => {
         console.log(json)
 
-        //isso daqui vai ser importante e está quase pronto pra o que vcs vão precisar
         var result = json.map(function (obj) {
           var posArr = []
           posArr.push(obj.nome)
