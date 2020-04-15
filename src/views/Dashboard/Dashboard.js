@@ -45,9 +45,10 @@ const useStyles = makeStyles(styles);
 export default function Dashboard() {
   const classes = useStyles();
   const [dependentes, setDependentes] = useState();
-  //não esqueçam disso
+  const [objetivos, setObjetivos] = useState();
   const [despesasMes, setDespesasMes] = useState();
   const dependentesColumns = ["Nome", "Parentesco", "Renda"]
+  const objetivosColumns = ["Nome", "Quantidade de Investimentos", "Valor Total"]
 
   const buscarDependentes = () => {
     fetch('http://localhost:8080/usuarios/1/dependentes', {
@@ -94,7 +95,7 @@ export default function Dashboard() {
 
         var somaMensal = 0;
 
-        json.forEach(function(item, index) {
+        json.forEach(function (item, index) {
           somaMensal += item.valor
         })
 
@@ -106,9 +107,40 @@ export default function Dashboard() {
       })
   }
 
+  const buscarObjetivos = () => {
+    fetch('http://localhost:8080/usuarios/1/objetivos', {
+      method: 'get',
+      headers: {
+        "Content-Type": "application/json"
+      },
+    })
+      .then(response => {
+        return response.json()
+      })
+      .then(json => {
+        console.log(json)
+
+        //isso daqui vai ser importante e está quase pronto pra o que vcs vão precisar
+        var result = json.map(function (obj) {
+          var posArr = []
+          posArr.push(obj.nome)
+          posArr.push(obj.numeroInvestimentos)
+          posArr.push(obj.valorTotal)
+          return posArr;
+        });
+
+        setObjetivos(result)
+      })
+      .catch(err => {
+        console.log("Erro")
+        console.log(err)
+      })
+  }
+
   useEffect(() => {
 
     //não esqueçam disso
+    buscarObjetivos();
     buscarDependentes();
     buscarDespesasMes();
 
@@ -136,6 +168,27 @@ export default function Dashboard() {
                   tableData={dependentes && dependentes}
                 />
               }
+
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={6}>
+          <Card>
+            <CardHeader color="warning">
+              <h4 className={classes.cardTitleWhite}>Objetivos</h4>
+              <p className={classes.cardCategoryWhite}>
+                Lista dos seus objetivos
+              </p>
+            </CardHeader>
+            <CardBody>
+              {objetivos !== undefined &&
+                <Table
+                  tableHeaderColor="primary"
+                  tableHead={objetivosColumns}
+                  tableData={objetivos && objetivos}
+                />
+              }
+
             </CardBody>
           </Card>
         </GridItem>
@@ -173,7 +226,7 @@ export default function Dashboard() {
                 <Store />
               </CardIcon>
               <p className={classes.cardCategory}>Despesas deste Mês</p>
-            <h3 className={classes.cardTitle}>{despesasMes && despesasMes}</h3>
+              <h3 className={classes.cardTitle}>{despesasMes && despesasMes}</h3>
             </CardHeader>
             {/* <CardFooter stats>
               <div className={classes.stats}>
