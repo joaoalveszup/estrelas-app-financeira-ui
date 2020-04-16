@@ -68,7 +68,7 @@ export default function Dashboard() {
           var posArr = []
           posArr.push(obj.nome)
           posArr.push(obj.parentesco)
-          posArr.push(obj.renda)
+          posArr.push(obj.renda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
           return posArr;
         });
         
@@ -126,7 +126,7 @@ export default function Dashboard() {
           var posArr = []
           posArr.push(obj.nome)
           posArr.push(obj.numeroInvestimentos)
-          posArr.push(obj.valorTotal)
+          posArr.push(obj.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
           return posArr;
         });
 
