@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import ChartistGraph from "react-chartist";
 // @material-ui/core
 import { makeStyles } from "@material-ui/core/styles";
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Icon from "@material-ui/core/Icon";
 // @material-ui/icons
 import Store from "@material-ui/icons/Store";
@@ -47,6 +48,7 @@ export default function Dashboard() {
   const [dependentes, setDependentes] = useState();
   const [objetivos, setObjetivos] = useState();
   const [despesasMes, setDespesasMes] = useState();
+  const [objetivosMes, setObjetivosMes] = useState();
   const dependentesColumns = ["Nome", "Parentesco", "Renda"]
   const objetivosColumns = ["Nome", "Quantidade de Investimentos", "Valor Total"]
 
@@ -63,12 +65,11 @@ export default function Dashboard() {
       .then(json => {
         console.log(json)
 
-        //isso daqui vai ser importante e está quase pronto pra o que vcs vão precisar
         var result = json.map(function (obj) {
           var posArr = []
           posArr.push(obj.nome)
           posArr.push(obj.parentesco)
-          posArr.push(obj.renda)
+          posArr.push(obj.renda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
           return posArr;
         });
 
@@ -99,7 +100,7 @@ export default function Dashboard() {
           somaMensal += item.valor
         })
 
-        setDespesasMes(somaMensal)
+        setDespesasMes(somaMensal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
       })
       .catch(err => {
         console.log("Erro")
@@ -118,14 +119,12 @@ export default function Dashboard() {
         return response.json()
       })
       .then(json => {
-        console.log(json)
-
-        //isso daqui vai ser importante e está quase pronto pra o que vcs vão precisar
         var result = json.map(function (obj) {
           var posArr = []
+
           posArr.push(obj.nome)
           posArr.push(obj.numeroInvestimentos)
-          posArr.push(obj.valorTotal)
+          posArr.push(obj.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
           return posArr;
         });
 
@@ -137,12 +136,30 @@ export default function Dashboard() {
       })
   }
 
+  const buscarObjetivosMes = () => {
+    fetch('http://localhost:8080/usuarios/1/objetivos/mes-corrente', {
+      method: 'get',
+      headers: {
+        "Content-Type": "application/json"
+      },
+    }).then(response => {
+      console.log(response)
+      return response.json()
+    }).then(json => {
+      setObjetivosMes(json.valorTotal.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }))
+    }).catch(err => {
+      console.log("Erro")
+    })
+  }
+
+
+
   useEffect(() => {
 
-    //não esqueçam disso
     buscarObjetivos();
     buscarDependentes();
     buscarDespesasMes();
+    buscarObjetivosMes();
 
   }, []);
 
@@ -153,48 +170,8 @@ export default function Dashboard() {
     <div>
       <GridContainer>
         <GridItem xs={12} sm={12} md={6}>
-          <Card>
-            <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Dependentes</h4>
-              <p className={classes.cardCategoryWhite}>
-                Lista dos seus dependentes
-              </p>
-            </CardHeader>
-            <CardBody>
-              {dependentes !== undefined &&
-                <Table
-                  tableHeaderColor="primary"
-                  tableHead={dependentesColumns}
-                  tableData={dependentes && dependentes}
-                />
-              }
-
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={6}>
-          <Card>
-            <CardHeader color="warning">
-              <h4 className={classes.cardTitleWhite}>Objetivos</h4>
-              <p className={classes.cardCategoryWhite}>
-                Lista dos seus objetivos
-              </p>
-            </CardHeader>
-            <CardBody>
-              {objetivos !== undefined &&
-                <Table
-                  tableHeaderColor="primary"
-                  tableHead={objetivosColumns}
-                  tableData={objetivos && objetivos}
-                />
-              }
-
-            </CardBody>
-          </Card>
-        </GridItem>
-        <GridItem xs={12} sm={12} md={6}>
           <Card chart>
-            <CardHeader color="success">
+            <CardHeader color="warning">
               <ChartistGraph
                 className="ct-chart"
                 data={despesasChart.data}
@@ -221,11 +198,11 @@ export default function Dashboard() {
         </GridItem>
         <GridItem xs={12} sm={6} md={3}>
           <Card>
-            <CardHeader color="success" stats icon>
-              <CardIcon color="success">
-                <Store />
+            <CardHeader color="warning" stats icon>
+              <CardIcon color="warning">
+                <Warning />
               </CardIcon>
-              <p className={classes.cardCategory}>Despesas deste Mês</p>
+              <p className={classes.cardCategory}>Gastos com despesas este mês</p>
               <h3 className={classes.cardTitle}>{despesasMes && despesasMes}</h3>
             </CardHeader>
             {/* <CardFooter stats>
@@ -234,6 +211,82 @@ export default function Dashboard() {
                 Last 24 Hours
               </div>
             </CardFooter> */}
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={6} md={3}>
+          <Card>
+            <CardHeader color="success" stats icon>
+              <CardIcon color="success">
+                <Store />
+              </CardIcon>
+              <p className={classes.cardCategory}>Gastos com objetivos este mês</p>
+              <h3 className={classes.cardTitle}>{objetivosMes && objetivosMes}</h3>
+            </CardHeader>
+            {/* <CardFooter stats>
+              <div className={classes.stats}>
+                <DateRange />
+                Last 24 Hours
+              </div>
+            </CardFooter> */}
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={6}>
+          <Card>
+            <CardHeader color="primary">
+              <h4 className={classes.cardTitleWhite}>Dependentes</h4>
+              <p className={classes.cardCategoryWhite}>
+                Lista dos seus dependentes
+              </p>
+            </CardHeader>
+            <CardBody>
+              {dependentes !== undefined &&
+                <Table
+                  tableHeaderColor="primary"
+                  tableHead={dependentesColumns}
+                  tableData={dependentes && dependentes}
+                />
+              }
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={6}>
+          <Card>
+            <CardHeader color="success">
+              <h4 className={classes.cardTitleWhite}>Objetivos</h4>
+              <p className={classes.cardCategoryWhite}>
+                Lista dos seus objetivos
+              </p>
+            </CardHeader>
+            <CardBody>
+              {objetivos !== undefined &&
+                <Table
+                  tableHeaderColor="primary"
+                  tableHead={objetivosColumns}
+                  tableData={objetivos && objetivos}
+                />
+              }
+
+            </CardBody>
+          </Card>
+        </GridItem>
+        <GridItem xs={12} sm={12} md={3}>
+          <Card>
+            <CardHeader color="warning">
+              <h4 className={classes.cardTitleWhite}>Objetivos</h4>
+              <p className={classes.cardCategoryWhite}>
+                Lista dos seus objetivos
+              </p>
+            </CardHeader>
+            <CardBody>
+              <h6>Objetivos</h6>
+              <LinearProgress variant="buffer" value={50} valueBuffer={100} dashed="true" />
+              <progress max="100" value="80" />
+            </CardBody>
+            <CardBody>
+              <h6>Objetivos</h6>
+              <LinearProgress variant="buffer" value={50} valueBuffer={100} dashed="true" />
+              <progress max="100" value="80" />
+            </CardBody>
           </Card>
         </GridItem>
         {/* <GridItem xs={12} sm={6} md={3}>
