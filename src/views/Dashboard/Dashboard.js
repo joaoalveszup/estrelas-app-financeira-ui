@@ -42,6 +42,7 @@ import {
 import styles from "assets/jss/material-dashboard-react/views/dashboardStyle.js";
 
 const useStyles = makeStyles(styles);
+var valorEmReal = "R$";
 
 export default function Dashboard() {
   const classes = useStyles();
@@ -73,6 +74,7 @@ export default function Dashboard() {
           return posArr;
         });
 
+        console.log(result.renda)
         setDependentes(result)
       })
       .catch(err => {
