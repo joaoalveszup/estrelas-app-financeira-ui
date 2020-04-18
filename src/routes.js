@@ -52,22 +52,6 @@ const dashboardRoutes = [
     icon: Dashboard,
     component: DashboardPage,
     layout: "/admin"
-  },
-  {
-    path: "/table",
-    name: "Table List",
-    rtlName: "قائمة الجدول",
-    icon: "content_paste",
-    component: TableList,
-    layout: "/admin"
-  },
-  {
-    path: "/icons",
-    name: "Icons",
-    rtlName: "الرموز",
-    icon: BubbleChart,
-    component: Icons,
-    layout: "/admin"
   }
 ];
 
