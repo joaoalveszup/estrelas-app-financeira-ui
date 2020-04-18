@@ -506,6 +506,11 @@ footer ul li a:hover {
   right: auto;
   left: 80px;
 }
+
+.MuiTableCell-root {
+  text-align: center !important;
+}
+
 * {
   letter-spacing: normal !important;
 }
